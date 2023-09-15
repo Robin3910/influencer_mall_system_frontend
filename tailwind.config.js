@@ -8,6 +8,15 @@ export const content = [
   "./app.vue",
 ];
 export const theme = {
+  container: {
+    screens:{
+      sm:"100%",
+      md: '100%',
+      lg:"960px",
+      xl:"1140px",
+      '2xl':"1320px"
+    }
+  },
   extend: {},
 };
 export const plugins = [];

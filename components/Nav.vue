@@ -1,5 +1,5 @@
 <template>
-  <div class="nav-wrap cursor-pointer">
+  <div class="nav-wrap cursor-pointer" >
     <nav class="md:container  mx-auto  flex  justify-between">
       <!--左侧菜单-->
       <div class=" flex items-center ">

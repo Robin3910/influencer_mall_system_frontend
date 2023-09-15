@@ -57,11 +57,12 @@ export default defineComponent({
 <style lang="less">
 .horizontal {
   .active {
+    color: #000!important;
     &:before {
       position: absolute;
-      bottom: 0;
+      bottom: 10px;
       left: 50%;
-      width: 30%;
+      width: 20%;
       height: 3px;
       content: " ";
       background: var(--color-primary);
