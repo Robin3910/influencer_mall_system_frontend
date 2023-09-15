@@ -1,0 +1,23 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@element-plus/nuxt": "^1.0.6",
+    "@nuxt/devtools": "latest",
+    "autoprefixer": "^10.4.15",
+    "less": "^4.2.0",
+    "nuxt": "^3.7.1",
+    "postcss": "^8.4.29",
+    "tailwindcss": "^3.3.3"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0"
+  }
+}
