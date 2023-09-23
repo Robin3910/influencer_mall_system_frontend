@@ -2,23 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 @import "variables.less";
-.el-button{
-  background-color: var(--el-button-bg-color)!important;
+.el-button {
+  background-color: var(--el-button-bg-color) !important;
 }
 
-.bt1{
-  border: 1px solid  red;
+.bt1 {
+  border: 1px solid red;
 }
-.bt2{
-  border: 1px solid  green;
+
+.bt2 {
+  border: 1px solid green;
 }
-.t{
+
+.t {
   color: var(--blue-color);
 }
-html,body{
-background-color: var(--color-background);
+
+.text-primary-color {
+  color: var(--color-primary);
+}
+
+html, body {
+  background-color: var(--color-background);
 
 }
+
+.row {
+  padding-left: -10px;
+  padding-right: -10px;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: black;
+}
+
+.col {
+margin-left: 10px;
+margin-right: 10px;
+@apply flex-0-auto w-full;
+}
+
 /* 自定义滚动条宽度 */
 ::-webkit-scrollbar {
   width: 5px;

@@ -17,7 +17,11 @@ export const theme = {
       '2xl':"1320px"
     }
   },
-  extend: {},
+  extend: {
+    flex:{
+      "0-auto":"0 0 auto"
+    }
+  },
 };
 export const plugins = [];
 

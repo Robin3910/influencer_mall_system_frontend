@@ -1,6 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-
+    runtimeConfig:{
+        public:{
+            apiHost:"http://127.0.0.1:9527"
+        }
+    },
     postcss: {
         plugins: {
             tailwindcss: {},
@@ -11,6 +15,6 @@ export default defineNuxtConfig({
         '~/assets/css/main.less'
     ],
     devtools: {enabled: true},
-    modules: ['@element-plus/nuxt'],
+    modules: ['@element-plus/nuxt']
 
 })

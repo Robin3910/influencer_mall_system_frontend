@@ -1,4 +1,5 @@
-import { hash } from 'ohash'
+import {hash} from 'ohash'
+import {result} from "lodash-es";
 
 // 后端返回的数据类型
 export interface ResOptions<T> {
@@ -21,18 +22,25 @@ const fetch = async (url: string, options?: any, headers?: any) => {
 
     try {
 
-        const { public: { VITE_API_HOST } } = useRuntimeConfig()
-        const reqUrl = VITE_API_HOST + url // 你的接口地址
+        const {public: {apiHost}} = useRuntimeConfig()
+
+        const reqUrl = apiHost + url // 你的接口地址
 
         // 设置key
         const key = hash(options + url)
 
         // 可以设置默认headers例如，token的获取最好用useState返回一个useCookie
-        const customHeaders = { token: useToken(), ...headers }
+        const customHeaders = {token: useToken(), ...headers}
 
-        const { data, error } = await useFetch(reqUrl, { ...options, key, headers: customHeaders })
+        const {data, error} = await useFetch(reqUrl, {...options, key, headers: customHeaders
+            ,server:false,
+            watch: false
+        })
         const result = data.value as ResOptions<any>
-        console.log('useFetchResData: ', result)
+        // console.log('reqUrl',reqUrl)
+        // console.log('data',data)
+        // console.log('useFetchResData: ', result)
+
         if (error.value || !result || (result && result.code !== 200)) {
             // 处理token失效的情况
             if (result.code === 401) {
@@ -61,18 +69,18 @@ const fetch = async (url: string, options?: any, headers?: any) => {
 export default class Http {
 
     get(url: string, params?: any, headers?: any) {
-        return fetch(url, { method: 'get', params }, headers)
+        return fetch(url, {method: 'get', params}, headers)
     }
 
     post(url: string, body?: any, headers?: any) {
-        return fetch(url, { method: 'post', body }, headers)
+        return fetch(url, {method: 'post', body}, headers)
     }
 
     put(url: string, body?: any, headers?: any) {
-        return fetch(url, { method: 'put', body }, headers)
+        return fetch(url, {method: 'put', body}, headers)
     }
 
     delete(url: string, body?: any, headers?: any) {
-        return fetch(url, { method: 'delete', body }, headers)
+        return fetch(url, {method: 'delete', body}, headers)
     }
 }
