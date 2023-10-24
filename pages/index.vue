@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="mt-5 md:container page-wrap mx-auto  pl-5 pr-5 md:pl-0 md:pr-0">
     <!-- 搜索模块 start-->
     <div class="search-wrap p-5 bg-white select-none">
       <div class="item flex flex-wrap md:flex-nowrap	 items-start text-neutral-600">
-        <div class="leading-8    md:w-auto md:flex-0-auto">产品目录:</div>
-        <div class="pl-3 cursor-pointer  md:w-auto text-sm	">
+        <div class="leading-8    md:w-auto md:flex-0-auto text-base">产品目录:</div>
+        <div class="pl-3 md:cursor-pointer  md:w-auto text-sm	">
           <span @click="handlerCategoryChange(item,index as number)" v-for="(item,index) in categoryList" :key="index"
                 class="mr-3   inline-block leading-8 "
                 :class="{'text-primary-color':currentCategoryIndex==index}">
@@ -15,78 +15,124 @@
     </div>
     <!-- 搜索模块 end-->
     <!--列表展示 start-->
-    <el-row class="mt-5" :gutter="20">
-      <el-col :sm="12" class="mb-5 " v-for="item in list">
-        <div class="bg-white rounded-md overflow-hidden">
-          <div class="flex flex-wrap ">
-            <div class="w-full xl:w-1/2  h-[380px] md:h-[280px]">
-              <el-image lazy class="w-full h-full" fit="cover" :src="item.headImageUrl"></el-image>
-            </div>
-            <div class="w-full xl:w-1/2  px-2 flex flex-col text-slate-800	">
-              <div class="leading-10"><span>红人编号:</span><span>666</span></div>
-              <div class="leading-10"><span>粉丝数<el-icon><QuestionFilled/></el-icon>:</span><span
-                  class="text-primary-color">开通会员即可查看</span></div>
-              <div class="leading-10">需要科学上网后点击案例查看视频:</div>
-              <div class="flex flex-wrap  justify-start">
-                <el-tag class="mb-2 mr-2 cursor-pointer" type="success" v-for="item in 10">
-                  <div class="flex items-center">
-                    <el-icon>
-                      <VideoPlay/>
-                    </el-icon>
-                    {{ Math.floor(Math.random() * 10000) }}芝麻
+    <el-row class="mt-5" :gutter="20" v-infinite-scroll="handlerPageNext" :infinite-scroll-immediate="false"
+            :infinite-scroll-distance="100">
+      <template v-if="list&&list.length>0">
+        <el-col :sm="12" class="mb-5 " v-for="item in list">
+          <div class="bg-white rounded-md overflow-hidden">
+            <div class="flex flex-wrap ">
+              <div class="w-full xl:w-1/2  h-[380px] md:h-[280px]">
+                <el-image lazy class="w-full h-full" fit="cover" :src="item.headImageUrl||'https://snow123.com/wp-content/uploads/2023/01/806031e1776755b7176f060101548f94_1.jpg'">
+                  <template #error>
+                    <img  src="https://snow123.com/wp-content/uploads/2023/01/806031e1776755b7176f060101548f94_1.jpg" class="w-full h-full object-cover"/>
+                  </template>
+                </el-image>
+              </div>
+              <div class="w-full xl:w-1/2  px-4 flex flex-col text-slate-800	">
+                <div class="leading-10"><span>红人:</span><span class="cursor-pointer">{{ item.name || "--" }}</span>
+                </div>
+                <template v-if="item.fansList&&item.fansList.length>0">
+                  <div class="leading-10"><span>粉丝数<el-icon v-if="false"><QuestionFilled/></el-icon>:</span>
+                    <span v-if="false" class="text-primary-color">开通会员即可查看</span></div>
+                  <div class="flex flex-wrap  justify-start">
+                    <el-tag class="mb-2 mr-2 cursor-pointer" v-for="(_item,_index) in item.fansList"
+                            :key="_index">
+                      <a class="flex items-center" :href="_item.url" target="_blank">
+
+                        {{ _item.platform }}：
+                        <el-icon>
+                          <Star/>
+                        </el-icon>
+                        {{ _item.count }}
+
+                      </a>
+                    </el-tag>
                   </div>
-                </el-tag>
+                </template>
+                <div class="leading-10">查看视频案例:</div>
+                <div class="flex flex-wrap  justify-start">
+                  <el-tag class="mb-2 mr-2 cursor-pointer" type="success" v-for="(_item,_index) in item.userVideos"
+                          :key="_index"  @click="()=>{
+                      currentTitle=`红人：`+item.name
+                      handlerPlay(_item)
+                    }">
+                    <a class="flex items-center">
+                      <el-icon>
+                        <VideoPlay/>
+                      </el-icon>
+                      {{ _item.title }}
+                    </a>
+                  </el-tag>
+                </div>
+              </div>
+            </div>
+            <div class=" flex items-center justify-between p-4 border border-x-0	 border-b-0	">
+              <div>
+                <span class="text-lg text-primary-color mr-2">会员价:￥{{ item.realPrice || 0 }}</span><span
+                  class="text-sm text-slate-800">非会员价:￥{{ item.price || 0 }}</span>
+              </div>
+              <div>
+                <el-button color="#FF5500" type="primary" v-if="false">选择</el-button>
               </div>
             </div>
           </div>
-          <div class=" flex items-center justify-between p-4 border border-x-0	 border-b-0	">
-            <div>
-              <span class="text-lg text-primary-color mr-2">会员价:￥410</span><span class="text-sm text-slate-800">非会员价:￥450</span>
-            </div>
-            <div>
-              <el-button color="#FF5500" type="primary">选择</el-button>
-            </div>
-          </div>
-        </div>
-      </el-col>
+        </el-col>
+      </template>
+      <template v-else>
+        <el-col :span="24" class="flex justify-center items-center">
+          <el-empty :image-size="200" description="暂无数据"/>
+        </el-col>
+      </template>
     </el-row>
     <!--列表展示 end-->
-    <div class="py-2">
-      <el-config-provider>
-        <!--        <el-pagination-->
-        <!--            :current-page="currentPage"-->
-        <!--            :background="false"-->
-        <!--            :small="false"-->
-        <!--            :page-sizes="[100, 200, 300, 400]"-->
-        <!--            layout="total,sizes,prev, pager, next"-->
-        <!--            :total="1000"-->
-        <!--        >-->
+    <div class="py-2 flex ">
 
-        <!--        </el-pagination>-->
-      </el-config-provider>
     </div>
+
   </div>
+  <client-only>
+    <el-dialog v-model="dialogShow"  class="!w-full md:!w-2/3 lg:!w-2/3 xl:!w-1/3">
+      <template #header>
+      <div class="text-base">{{currentTitle}}</div>
+      </template>
+      <div class="max-w-full h-[40vh] md:h-[40vh] ">
+        <video autoplay style="width: 100%;height: 100%;object-fit: cover" :src="currentVideoUrl" controls="controls"></video>
+      </div>
+      <template #footer>
+        <el-button type="primary" color="#FF5500" @click="dialogShow = false">
+          确认
+        </el-button>
+      </template>
+    </el-dialog>
+  </client-only>
 </template>
 
 
 <script setup lang="ts">
+definePageMeta({
+  layout: false
+})
+const currentTitle=ref("")
+const currentVideoUrl = ref("")
+const dialogShow = ref(false)
 const {MainApi} = useApi()
 const pageSize = ref(10);
 const pageNum = ref(1)
 const categoryList = ref<any[]>()
-const list = ref<any[]>()
+const list = ref([] as any[])
+const category_id = ref("")
 const queryParams = ref({
   pageSize: pageSize,
   pageNum: pageNum,
-  categoryId: ""
+  categoryId: category_id
 })
-const currentPage = ref(0)
-let images = ref<any>()
-let currentCategoryIndex = ref<(number | null)>()
-let handlerCategoryChange = (item: any, index: number): void => {
-  currentCategoryIndex.value = index
-  queryParams.value.categoryId = item.id
 
+const currentCategoryIndex = ref<(number | null)>()
+const handlerCategoryChange = (item: any, index: number): void => {
+  currentCategoryIndex.value = index
+  queryParams.value.categoryId = ref(item.id)
+  queryParams.value.pageNum = 1
+  list.value = []
 }
 const fetchData = async () => {
   await nextTick()
@@ -97,22 +143,30 @@ const fetchData = async () => {
       pageSize: 99999,
       pageNum: 1,
     })
-    categoryList.value = [{title: "全部", id: ""}, ...categoryData.list];
+    categoryList.value = [{title: "全部", id: ""}, ...categoryData.data.list];
   }
-  console.log('>>>>>>>>>>开始请求接口')
   //网红列表
-  const userData = await MainApi.getUserList(queryParams.value)
-  console.log('>>>>接口数据', userData)
-  list.value = userData?.list||[]
+  const userData = await MainApi.getUserList({...queryParams.value})
+  list.value = [...list.value, ...userData.data.list]
 }
 watch(queryParams, () => {
   fetchData()
 }, {
+  immediate: true,
   deep: true
 })
-onMounted(() => {
-  fetchData()
-})
 
+// 处理分页
+const handlerPageNext = () => {
+  console.log('>>>>>下一页触发')
+  queryParams.value.pageNum = queryParams.value.pageNum + 1
+}
+// 处理点击播放
+const handlerPlay = (item: { url: string, [key: string]: any }) => {
+  dialogShow.value = true
+  setTimeout(() => {
+    currentVideoUrl.value = item.url.replace("embedded.cc.", "")
+  }, 100)
+}
 
 </script>

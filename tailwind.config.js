@@ -8,13 +8,14 @@ export const content = [
   "./app.vue",
 ];
 export const theme = {
+  important: true,
   container: {
     screens:{
       sm:"100%",
       md: '100%',
       lg:"960px",
-      xl:"1140px",
-      '2xl':"1320px"
+      xl:"1200px",
+      '2xl':"1440px"
     }
   },
   extend: {

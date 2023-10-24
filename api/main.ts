@@ -1,12 +1,19 @@
 import Http from '@/service/request'
 
-export default new class main extends Http {
+export default {
     // 获取分类列表
-    public getCateGoryList(obj?: (any | null)): Promise<any> {
-        return this.get('/wh/get_category_list', obj)
-    }
+    getCateGoryList(obj?: (any | null)): Promise<any> {
+        return Http.get('/wh/get_category_list', obj)
+    },
 
-    public getUserList(obj?: (any | null)): Promise<any> {
-        return this.get('/wh/user', obj)
+    getUserList(obj?: (any | null)): Promise<any> {
+        return Http.get('/wh/user', obj)
+    },
+
+    getResourceList(obj?: (any | null)): Promise<any> {
+        return Http.get('/wh/resource', obj)
+    },
+    getRegionList(obj?: (any | null)): Promise<any> {
+        return Http.get('/wh/region', obj)
     }
 }

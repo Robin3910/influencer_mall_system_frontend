@@ -7,6 +7,7 @@ export default defineComponent({
   setup: (props,ctx) => {
 
     const menuData = useMenu()
+    const route=useRoute()
     const handlerMenuChange = (item) => {
       menuData.value.forEach((v) => {
         v.active = false
@@ -38,7 +39,7 @@ export default defineComponent({
               // }
               return (
                   <NuxtLink to={item.path} onClick={handlerMenuChange.bind(this, item)}>
-                    <li className={[item.active ? "active" : ""]}>
+                    <li className={[route.path==item.path ? "active" : ""]}>
                       {item.title}
                     </li>
                   </NuxtLink>

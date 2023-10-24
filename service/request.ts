@@ -1,86 +1,91 @@
-import {hash} from 'ohash'
-import {result} from "lodash-es";
+//文件目录：service/index.ts
 
-// 后端返回的数据类型
-export interface ResOptions<T> {
-    data: T
-    code?: number
-    message?: string
-}
+// 引入了nuxt/app模块中的UseFetchOptions类型,UseFetchOptions类型是一个用于配置请求选项的接口或类型
+import {UseFetchOptions} from "nuxt/app";
 
-function useToken() {
+//  HTTP 请求的方法
+type Methods = "GET" | "POST" | "DELETE" | "PUT";
 
+// URL 基地址
+const BASE_URL = "";
+
+// 请求结果数据格式
+export interface IResultData<T> {
+    code: number;
+    data: T;
+    msg: string;
 }
 
 /**
- * api请求封装
+ * api请求封装，使用useFetch函数
  * @param { String } url 请求地址
- * @param { Object } options useFtech第二个参数
- * @param { Object } headers 自定义header头, 单独设置headers区分请求参数，也好设置类型
+ * @param { String } method 请求方法
+ * @param { Object } data 请求数据
+ * @param { UseFetchOptions } options 请求选项
  */
-const fetch = async (url: string, options?: any, headers?: any) => {
 
-    try {
+/**
+ * options常用参数说明
+ * @param { boolean } lazy    是否在加载路由后才请求该异步方法，默认为false
+ * @param { boolean } server  是否在服务端请求数据，默认为true
+ */
+class HttpRequest {
+    request<T = any>(url: string, method: Methods, data: any, options?: UseFetchOptions<T>) {
+        return new Promise((resolve, reject) => {
+            // 继承UseFetchOptions类型，包含了baseURL和method两个属性
+            const newOptions: UseFetchOptions<T> = {
+                baseURL: BASE_URL,
+                method,
+                ...options
+            };
 
-        const {public: {apiHost}} = useRuntimeConfig()
-
-        const reqUrl = apiHost + url // 你的接口地址
-
-        // 设置key
-        const key = hash(options + url)
-
-        // 可以设置默认headers例如，token的获取最好用useState返回一个useCookie
-        const customHeaders = {token: useToken(), ...headers}
-
-        const {data, error} = await useFetch(reqUrl, {...options, key, headers: customHeaders
-            ,server:false,
-            watch: false
-        })
-        const result = data.value as ResOptions<any>
-        // console.log('reqUrl',reqUrl)
-        // console.log('data',data)
-        // console.log('useFetchResData: ', result)
-
-        if (error.value || !result || (result && result.code !== 200)) {
-            // 处理token失效的情况
-            if (result.code === 401) {
-                // token.value = ''
-                await navigateTo('/login')
+            // 根据请求方法处理请求的数据
+            if (method === "GET" || method === "DELETE") {
+                // 将数据设置为newOptions的params属性
+                newOptions.params = data;
             }
-            // 在客户端的时候抛出错误结果方便捕捉
-            if (process.client) {
-                return Promise.reject(result)
+            if (method === "POST" || method === "PUT") {
+                // 将数据设置为newOptions的body属性
+                newOptions.body = data;
             }
-            // 在服务端就直接渲染错误页面，需要设置一个error.vue接收错误信息
-            throw createError({
-                statusCode: 500,
-                statusMessage: reqUrl,
-                message: error.value?.message || '服务器内部错误',
+
+            // 发送请求
+            useFetch(url, {
+                ...newOptions,
+                server: false,
+                watch: false
+                // immediate: false
             })
-        }
-        return result.data // 这里直接返回data或者其他的
-    } catch (err) {
-        console.log(err)
-        return Promise.reject(err)
+                .then((res) => {
+                    resolve(res.data.value);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
     }
 
+    // 封装常用方法
+    get<T = any>(url: string, params?: any, options?: UseFetchOptions<T>) {
+        return this.request(url, "GET", params, options);
+    }
+
+
+    post<T = any>(url: string, data: any, options?: UseFetchOptions<T>) {
+        return this.request(url, "POST", data, options);
+    }
+
+
+    Put<T = any>(url: string, data: any, options?: UseFetchOptions<T>) {
+        return this.request(url, "PUT", data, options);
+    }
+
+
+    Delete<T = any>(url: string, params: any, options?: UseFetchOptions<T>) {
+        return this.request(url, "DELETE", params, options);
+    }
 }
 
-export default class Http {
+const httpRequest = new HttpRequest();
 
-    get(url: string, params?: any, headers?: any) {
-        return fetch(url, {method: 'get', params}, headers)
-    }
-
-    post(url: string, body?: any, headers?: any) {
-        return fetch(url, {method: 'post', body}, headers)
-    }
-
-    put(url: string, body?: any, headers?: any) {
-        return fetch(url, {method: 'put', body}, headers)
-    }
-
-    delete(url: string, body?: any, headers?: any) {
-        return fetch(url, {method: 'delete', body}, headers)
-    }
-}
+export default httpRequest;
