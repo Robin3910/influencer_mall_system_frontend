@@ -29,10 +29,10 @@
                 </el-image>
               </div>
               <div class="w-full xl:w-1/2  px-4 flex flex-col text-slate-800	">
-                <div class="leading-10"><span>红人:</span><span class="cursor-pointer">{{ item.name || "--" }}</span>
+                <div class="leading-10"><span v-if="item.no">{{ item.no }}|</span><span class="cursor-pointer">{{ item.name || "--" }}</span>
                 </div>
                 <template v-if="item.fansList&&item.fansList.length>0">
-                  <div class="leading-10"><span>粉丝数<el-icon v-if="false"><QuestionFilled/></el-icon>:</span>
+                  <div class="leading-10"><span>社媒粉丝数量<el-icon v-if="false"><QuestionFilled/></el-icon>:</span>
                     <span v-if="false" class="text-primary-color">开通会员即可查看</span></div>
                   <div class="flex flex-wrap  justify-start">
                     <el-tag class="mb-2 mr-2 cursor-pointer" v-for="(_item,_index) in item.fansList"
@@ -49,11 +49,11 @@
                     </el-tag>
                   </div>
                 </template>
-                <div class="leading-10">查看视频案例:</div>
+                <div class="leading-10">视频案例:</div>
                 <div class="flex flex-wrap  justify-start">
                   <el-tag class="mb-2 mr-2 cursor-pointer" type="success" v-for="(_item,_index) in item.userVideos"
                           :key="_index"  @click="()=>{
-                      currentTitle=`红人：`+item.name
+                      currentTitle=item.no+`|`+item.name
                       handlerPlay(_item)
                     }">
                     <a class="flex items-center">
