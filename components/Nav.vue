@@ -5,8 +5,8 @@
       <div class=" flex items-center ">
         <!--logo-->
         <div class="logo hidden md:flex">
-          <img src="/img/logo.d44d50ce.png"/>
-          <span>站外推广</span>
+          <img src="/img/logo.png"/>
+<!--          <span>站外推广</span>-->
         </div>
         <!--menu-->
         <div class=" hidden md:flex">

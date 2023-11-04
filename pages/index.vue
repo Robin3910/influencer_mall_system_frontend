@@ -19,7 +19,7 @@
             :infinite-scroll-distance="100">
       <template v-if="list&&list.length>0">
         <el-col :sm="12" class="mb-5 " v-for="item in list">
-          <div class="bg-white rounded-md overflow-hidden">
+          <div class="bg-white rounded-md overflow-hidden text-base">
             <div class="flex flex-wrap ">
               <div class="w-full xl:w-1/2  h-[380px] md:h-[280px]">
                 <el-image lazy class="w-full h-full" fit="cover" :src="item.headImageUrl||'https://snow123.com/wp-content/uploads/2023/01/806031e1776755b7176f060101548f94_1.jpg'">
@@ -29,8 +29,8 @@
                 </el-image>
               </div>
               <div class="w-full xl:w-1/2  px-4 flex flex-col text-slate-800	">
-                <div class="leading-10"><span>红人:</span><span class="cursor-pointer">{{ item.name || "--" }}</span>
-                </div>
+                <div class="leading-10"><span>编号:</span><span class="cursor-pointer">{{ item.no || "--" }}</span></div>
+                <div class="leading-10"><span>姓名:</span><span class="cursor-pointer">{{ item.name || "--" }}</span></div>
                 <template v-if="item.fansList&&item.fansList.length>0">
                   <div class="leading-10"><span>粉丝数<el-icon v-if="false"><QuestionFilled/></el-icon>:</span>
                     <span v-if="false" class="text-primary-color">开通会员即可查看</span></div>
@@ -64,6 +64,8 @@
                     </a>
                   </el-tag>
                 </div>
+                <div class="">介绍:</div>
+                <div class="">{{item.descript}}</div>
               </div>
             </div>
             <div class=" flex items-center justify-between p-4 border border-x-0	 border-b-0	">
@@ -96,7 +98,7 @@
       <div class="text-base">{{currentTitle}}</div>
       </template>
       <div class="max-w-full h-[40vh] md:h-[40vh] ">
-        <video autoplay style="width: 100%;height: 100%;object-fit: cover" :src="currentVideoUrl" controls="controls"></video>
+        <video v-if="dialogShow" autoplay style="width: 100%;height: 100%;object-fit: cover" :src="currentVideoUrl" controls="controls"></video>
       </div>
       <template #footer>
         <el-button type="primary" color="#FF5500" @click="dialogShow = false">
@@ -109,9 +111,9 @@
 
 
 <script setup lang="ts">
-definePageMeta({
-  layout: false
-})
+// definePageMeta({
+//   layout: false
+// })
 const currentTitle=ref("")
 const currentVideoUrl = ref("")
 const dialogShow = ref(false)
