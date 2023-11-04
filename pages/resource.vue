@@ -126,14 +126,7 @@ onMounted(() => {
 <template>
   <div style="position: relative" class="mt-5 md:container page-wrap mx-auto  pl-5 pr-5 md:pl-0 md:pr-0">
     <el-row class="bg-[white] p-[10px]  ">
-      <el-col :span="24" :sm="8" :md="8" class="mb-[10px] px-[10px]">
-        <div class="flex items-center">
-          <span class="text-sm text-gray-400 px-3">搜索:</span>
-          <el-input clearable v-model="queryParams.title" class="flex-1"
-                    placeholder="名称、链接、类目、代发描述"></el-input>
 
-        </div>
-      </el-col>
       <el-col :span="24" :sm="24" :md="24" :lg="12" class="mb-[10px] px-[10px]  ">
         <div class="flex items-center  h-full flex-wrap">
           <span class="text-sm text-gray-400 px-3 flex-0-auto mb-2">购物平台:</span>
@@ -145,6 +138,14 @@ onMounted(() => {
                     :class="[_item.selected?'!text-green-500':'']">{{ _item.name }}</span>
             </div>
           </div>
+        </div>
+      </el-col>
+      <el-col :span="24" :sm="8" :md="8" class="mb-[10px] px-[10px]">
+        <div class="flex items-center">
+          <span class="text-sm text-gray-400 px-3">搜索:</span>
+          <el-input clearable v-model="queryParams.title" class="flex-1"
+                    placeholder="名称、链接、类目、代发描述"></el-input>
+
         </div>
       </el-col>
       <el-col :span="24" :sm="8" :md="4" class="mb-[10px] px-[10px]">
@@ -220,7 +221,7 @@ onMounted(() => {
                     </el-tag>
                     <el-tag v-if="row.dayPush" type="info" effect="plain"
                             class="mr-[10px] mt-[10px] !text-rose-500	!border-rose-500	">
-                      {{ row.dayPush }}日发帖数
+                      日均发帖数{{ row.dayPush }}
                     </el-tag>
                     <el-tag v-if="row.members" type="info" effect="plain"
                             class="mr-[10px] mt-[10px] !text-green-600	!border-green-600">
