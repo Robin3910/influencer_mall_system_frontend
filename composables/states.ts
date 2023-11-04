@@ -9,6 +9,12 @@ export const useMenu = () => useState('menu', () => [
         path: "/resource",
         active: false
     },
+    {
+        title: "我要推广",
+        path: "/contact",
+        url: "https://snow123.com/contact_us/",
+        active: false
+    },
     // {
     //     title: "折扣计算器",
     //     path: "/",

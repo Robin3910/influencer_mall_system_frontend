@@ -1,7 +1,7 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: false
-})
+// definePageMeta({
+//   layout: false
+// })
 import {Plus, Search} from "@element-plus/icons-vue";
 import {onMounted} from "@vue/runtime-core";
 
@@ -117,6 +117,20 @@ const handlerSelectStation = (index: number) => {
     }
   })
 }
+const getProductPlatFormIcon = (str: string): string[] => {
+  let iconData: string[] = []
+  str.split("-").forEach(item => {
+    console.log('>>>>>>>>>item',item)
+    platformList.value.forEach(p => {
+
+      if (item == p.value) {
+        iconData.push(p.icon)
+      }
+    })
+  })
+  console.log('>>>>>>>>>>>iconData',iconData)
+  return iconData;
+}
 onMounted(() => {
   fetchRegoinData()
 })
@@ -133,14 +147,14 @@ onMounted(() => {
           <div class="flex items-center flex-wrap">
             <div v-for="(_item,_index) in platformList" @click="handlerSelectStation(_index)" :key="_index"
                  class="flex items-center cursor-pointer px-3 mb-2">
-              <svg-icon v-if="_item.icon" :name="_item.icon" class="w-[20px] h-[20px] inline-block"></svg-icon>
+              <svg-icon v-if="_item.icon" :name="_item.icon" class="w-[20px] h-[20px] inline-block mr-1"></svg-icon>
               <span class="flex-0-auto text-gray-400 text-sm"
                     :class="[_item.selected?'!text-green-500':'']">{{ _item.name }}</span>
             </div>
           </div>
         </div>
       </el-col>
-      <el-col :span="24" :sm="8" :md="8" class="mb-[10px] px-[10px]">
+      <el-col :span="24" :sm="24" :md="24" :lg="8" class="mb-[10px] px-[10px]">
         <div class="flex items-center">
           <span class="text-sm text-gray-400 px-3">搜索:</span>
           <el-input clearable v-model="queryParams.title" class="flex-1"
@@ -148,7 +162,7 @@ onMounted(() => {
 
         </div>
       </el-col>
-      <el-col :span="24" :sm="8" :md="4" class="mb-[10px] px-[10px]">
+      <el-col :span="24" :sm="4" :md="4" class="mb-[10px] px-[10px]">
         <div class="flex items-center">
 
           <el-button class="ml-3" type="primary" :icon="Search" color="#FF5500" @click="handlerSearch" plain>查询
@@ -167,7 +181,7 @@ onMounted(() => {
               <template #title>
                 <div class="flex items-center px-3 hover:text-green-500		" @click="handlerSearchRegion(item)">
                   <el-image class=" rounded-md w-[30px] h-[30px] mr-3" fit="cover"
-                            :src="`data:image/png;base64,`+item.icon">
+                            :src="item.icon">
                     <template #error>
                       <img src="https://snow123.com/wp-content/uploads/2023/01/806031e1776755b7176f060101548f94_1.jpg"
                            class="w-full h-full object-cover"/>
@@ -208,27 +222,34 @@ onMounted(() => {
                   </el-image>
                 </div>
                 <div class="flex flex-col justify-between flex-1 ml-[10px]  text-neutral-600">
-                  <a :href="row.link||'#'" class="text-gray-950 text-lg">{{ row.title }}
+                  <a :href="row.link||'#'" target="_blank" class="text-gray-950 text-lg">{{ row.title }}
                     <svg-icon class="w-[15px] h-[15px] inline-block" name="link"/>
                   </a>
                   <div>
-                    <el-tag type="info" effect="plain"
-                            class="mr-[10px] mt-[10px] !text-neutral-600 !border-neutral-600">
+                    <a :href="`https://www.similarweb.com/website/${row.link.replace('https://www.','').replace('\/','')}/#overview`" target="_blank"><el-tag type="info" effect="plain"
+                                                                                                                                                              class="mr-[10px] mt-[10px] !text-neutral-600 !border-neutral-600">
                       流量分析
                     </el-tag>
-                    <el-tag type="info" effect="plain" class="mr-[10px] mt-[10px] !text-blue-500	!border-blue-500	">
-                      截图反馈
-                    </el-tag>
+                    </a>
+                    <!--                    <el-tag type="info" effect="plain" class="mr-[10px] mt-[10px] !text-blue-500	!border-blue-500	">-->
+                    <!--                      截图反馈-->
+                    <!--                    </el-tag>-->
                     <el-tag v-if="row.dayPush" type="info" effect="plain"
                             class="mr-[10px] mt-[10px] !text-rose-500	!border-rose-500	">
-                      日均发帖数{{ row.dayPush }}
+                      日均发帖数 {{ row.dayPush }}
                     </el-tag>
                     <el-tag v-if="row.members" type="info" effect="plain"
                             class="mr-[10px] mt-[10px] !text-green-600	!border-green-600">
                       {{ row.members }}受众
                     </el-tag>
                   </div>
+                  <div class="mt-2">
+                    <template v-for="(item,index) in getProductPlatFormIcon(row.productPlatform)" :key="index">
+                      <svg-icon class="w-[20px] h-[20px] inline-block mx-2" :name="item" />
+                    </template>
+                  </div>
                 </div>
+
               </div>
             </template>
           </el-table-column>

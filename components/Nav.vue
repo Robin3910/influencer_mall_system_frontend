@@ -20,7 +20,7 @@
         </div>
       </div>
       <!--右边-->
-      <div class=" flex items-center">
+      <div v-if="false" class=" flex items-center">
         <el-button color="#FF5500" type="primary">我要下单</el-button>
         <el-button>联系客服</el-button>
         <el-icon class="text-2xl ml-2.5 text-gray-600">

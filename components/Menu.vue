@@ -9,6 +9,11 @@ export default defineComponent({
     const menuData = useMenu()
     const route=useRoute()
     const handlerMenuChange = (item) => {
+      if(item.url) {
+        window.open(item.url, "_blank");
+
+        // window.location.href = item.url;
+      }
       menuData.value.forEach((v) => {
         v.active = false
       })
