@@ -44,7 +44,7 @@
                         <el-icon>
                           <Star/>
                         </el-icon>
-                        {{ _item.count }}
+                        {{ _item.count>1000?_item.count/1000+"k":_item.count }}
 
                       </a>
                     </el-tag>

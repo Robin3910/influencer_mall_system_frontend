@@ -10,7 +10,7 @@ export const useMenu = () => useState('menu', () => [
         active: false
     },
     {
-        title: "我要推广",
+        title: "品牌推广",
         path: "/contact",
         url: "https://snow123.com/contact_us/",
         active: false

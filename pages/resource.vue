@@ -2,7 +2,7 @@
 // definePageMeta({
 //   layout: false
 // })
-import {Plus, Search} from "@element-plus/icons-vue";
+import {Plus, Refresh, Search} from "@element-plus/icons-vue";
 import {onMounted} from "@vue/runtime-core";
 
 const platformList = ref([
@@ -44,7 +44,7 @@ const {MainApi} = useApi()
 const queryParams = ref({
   productPlatform: "",
   pageSize: 10,
-  pageNum: 0,
+  pageNum: 1,
   title: "",
   priceStart: "",
   priceEnd: "",
@@ -58,11 +58,11 @@ const fetchData = async () => {
   loading.value = true
   let data = await MainApi.getResourceList(queryParams)
   loading.value = false
-  if (data && data.data.list && data.data.list.length > 0) {
-    (data.data.list as any[]).forEach(item => {
-      item.price = "¥" + (item?.whResourceItemsList[0]?.price || 0)
-    })
-  }
+  // if (data && data.data.list && data.data.list.length > 0) {
+  //   (data.data.list as any[]).forEach(item => {
+  //     item.price = "¥" + (item?.whResourceItemsList[0]?.price || 0)
+  //   })
+  // }
   tableData.value = [...tableData.value, ...data.data.list] as any
 
 }
@@ -76,6 +76,27 @@ const fetchRegoinData = async () => {
 const handlerSearch = () => {
   queryParams.value.pageNum = 1
   tableData.value = []
+  fetchData()
+}
+const handlerResetSearch = () => {
+  regionData.value=regionData.value.map(item=>{
+    item.children= item.children.map((_item: { checked: boolean; })=>{
+      _item.checked=false
+      return _item
+    })
+    return item
+  })
+  tableData.value = []
+  queryParams.value = {
+    productPlatform: "",
+    pageSize: 10,
+    pageNum: 1,
+    title: "",
+    priceStart: "",
+    priceEnd: "",
+    region: "",
+    platform: "",
+  }
   fetchData()
 }
 // handlerSearch()
@@ -113,6 +134,7 @@ const handlerSelectStation = (index: number) => {
     if (index === _index) {
       item.selected = true
       queryParams.value.productPlatform = item.value
+      tableData.value = []
       fetchData()
     }
   })
@@ -120,7 +142,7 @@ const handlerSelectStation = (index: number) => {
 const getProductPlatFormIcon = (str: string): string[] => {
   let iconData: string[] = []
   str.split("-").forEach(item => {
-    console.log('>>>>>>>>>item',item)
+    console.log('>>>>>>>>>item', item)
     platformList.value.forEach(p => {
 
       if (item == p.value) {
@@ -128,11 +150,12 @@ const getProductPlatFormIcon = (str: string): string[] => {
       }
     })
   })
-  console.log('>>>>>>>>>>>iconData',iconData)
+  console.log('>>>>>>>>>>>iconData', iconData)
   return iconData;
 }
 onMounted(() => {
   fetchRegoinData()
+  fetchData()
 })
 
 </script>
@@ -167,7 +190,8 @@ onMounted(() => {
 
           <el-button class="ml-3" type="primary" :icon="Search" color="#FF5500" @click="handlerSearch" plain>查询
           </el-button>
-
+          <el-button class="ml-3" type="primary" :icon="Refresh" color="#FF5500" @click="handlerResetSearch" plain>重置
+          </el-button>
         </div>
       </el-col>
 
@@ -202,86 +226,68 @@ onMounted(() => {
         </el-scrollbar>
 
       </el-col>
-      <el-col :span="24" :md="14">
-        <el-table
-            default-expand-all
-            v-el-table-infinite-scroll="handlerPageNext"
-            :infinite-scroll-disabled="false"
-            v-loading="loading" :data="tableData" width="100%"
-            height="calc( 100vh - 180px )">
-          <el-table-column prop="name" label="群名称" min-width="400">
-            <template #default="{row}">
-              <div class="flex  p-[20px]">
-                <div class="flex items-center justify-center ">
-                  <el-image class=" rounded-md w-[60px] h-[60px]" fit="cover"
-                            :src="row.headImageUrl||'https://snow123.com/wp-content/uploads/2023/01/806031e1776755b7176f060101548f94_1.jpg'">
-                    <template #error>
-                      <img src="https://snow123.com/wp-content/uploads/2023/01/806031e1776755b7176f060101548f94_1.jpg"
-                           class="w-full h-full object-cover"/>
-                    </template>
-                  </el-image>
-                </div>
-                <div class="flex flex-col justify-between flex-1 ml-[10px]  text-neutral-600">
-                  <a :href="row.link||'#'" target="_blank" class="text-gray-950 text-lg">{{ row.title }}
-                    <svg-icon class="w-[15px] h-[15px] inline-block" name="link"/>
-                  </a>
+      <el-col :span="24" :md="14"  v-infinite-scroll="handlerPageNext" :infinite-scroll-immediate="false"
+              :infinite-scroll-distance="150"  >
+        <!--新版本-->
+        <div v-for="(item,index) in tableData" :key="index" class="px-5 py-2 bg-white mb-3">
+          <el-collapse>
+            <el-collapse-item>
+              <template #title>
+                <div class="flex items-start  w-full  flex-wrap  ">
                   <div>
-                    <a :href="`https://www.similarweb.com/website/${row.link.replace('https://www.','').replace('\/','')}/#overview`" target="_blank"><el-tag type="info" effect="plain"
-                                                                                                                                                              class="mr-[10px] mt-[10px] !text-neutral-600 !border-neutral-600">
-                      流量分析
-                    </el-tag>
-                    </a>
-                    <!--                    <el-tag type="info" effect="plain" class="mr-[10px] mt-[10px] !text-blue-500	!border-blue-500	">-->
-                    <!--                      截图反馈-->
-                    <!--                    </el-tag>-->
-                    <el-tag v-if="row.dayPush" type="info" effect="plain"
-                            class="mr-[10px] mt-[10px] !text-rose-500	!border-rose-500	">
-                      日均发帖数 {{ row.dayPush }}
-                    </el-tag>
-                    <el-tag v-if="row.members" type="info" effect="plain"
-                            class="mr-[10px] mt-[10px] !text-green-600	!border-green-600">
-                      {{ row.members }}受众
-                    </el-tag>
+                   <img class="w-[60px] h-[60px]" :src="item.headImageUrl">
                   </div>
-                  <div class="mt-2">
-                    <template v-for="(item,index) in getProductPlatFormIcon(row.productPlatform)" :key="index">
-                      <svg-icon class="w-[20px] h-[20px] inline-block mx-2" :name="item" />
-                    </template>
+                  <div class="pl-3  " style="flex: 1;">
+                    <div class="flex justify-between items-center flex-wrap">
+                      <div>
+                        <span class="font-bold text-base">{{item.title}}</span>
+                      </div>
+
+                      <div class=" flex items-center text-gray-400 flex-1  justify-end">
+                        <template v-if="item.members>0">
+                          <el-icon class="mr-1"><User /></el-icon>
+                          <span>{{item.members>1000?item.members/1000+'k':item.members}}</span>
+                        </template>
+                        <span class="ml-5 text-sm text-[#f50]">¥{{item.lowPrice||0}}起</span>
+                       </div>
+                    </div>
+
+                    <div class="mb-2 flex items-center">
+                      <a :href="item.link||'#'" target="_blank" class="text-gray-950 text-lg mr-2">
+                        <svg-icon class="w-[15px] h-[15px] inline-block" name="link"/>
+                      </a>
+                      <a :href="`https://www.similarweb.com/website/${item.link.replace('https://www.','').replace('\/','')}/#overview`"
+                         target="_blank">
+                        <el-tag type="info" effect="plain"
+                                class="mr-[10px] mt-[10px] !text-neutral-600 !border-neutral-600">
+                          流量分析
+                        </el-tag>
+                      </a>
+                    </div>
+                    <div class="text-gray-500  mb-2">
+                     <span  > {{item.whResourceItemsList&&item.whResourceItemsList[0].description}}</span>
+                    </div>
                   </div>
                 </div>
+              </template>
+              <template #default>
+                <div class="py-3 bg-gray-50 pl-5" v-for="(item,index) in item.whResourceItemsList" :key="index">
+                  <div class="flex items-center justify-between">
+                    <el-tag type="info" effect="plain"  class="mr-[10px] mt-[10px] !text-neutral-600 !border-neutral-600">
+                      上贴率{{item.rate}}%
+                    </el-tag>
+                    <div class="flex items-center pr-10">
+                      <span class="ml-5 text-sm text-[#f50] mr-10">¥{{item.price||0}}</span>
+                      <el-button type="primary" size="small" color="#FF5500">添加购物车</el-button>
+                    </div>
+                  </div>
+                  <div class="py-3">{{item.description}}</div>
+                </div>
+              </template>
+            </el-collapse-item>
+          </el-collapse>
+        </div>
 
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="price" label="最低价"/>
-          <el-table-column prop="platform" label="平台" width="60" fixed="right">
-            <template #default="{row}">
-              <div class="flex justify-center ">
-                <svg-icon name="message" class="w-[20px] h-[20px] inline-block"></svg-icon>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column type="expand" fixed="right">
-            <template #default="{row}">
-              <div class="pb-[30px] pl-[30px]">
-                <el-table :data="row.whResourceItemsList">
-                  <el-table-column prop="description" label=""/>
-                  <el-table-column prop="price" label="价格">
-                    <template #default="{row}">
-                      {{ "¥" + row.price || 0 }}
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="rate" label="上帖率" fixed="right"/>
-                </el-table>
-              </div>
-            </template>
-          </el-table-column>
-          <template #empty>
-            <div class="flex items-center justify-center">
-              <el-empty :image-size="200" description="暂无数据"/>
-            </div>
-          </template>
-        </el-table>
       </el-col>
       <el-col :span="0" :md="6" class="pl-3 ">
         <div class="bg-[white] h-[20vh]">
@@ -299,6 +305,17 @@ onMounted(() => {
 </template>
 
 <style>
+.el-collapse{
+  border: none;
+}
+.el-collapse-item__wrap{
+  border: none;
+}
+.el-collapse-item__header{
+  border: none;
+  height: auto!important;
+  line-height: 1.2;
+}
 .el-input {
   --el-input-focus-border-color: var(--color-primary) !important;
 }
