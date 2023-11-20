@@ -13,6 +13,21 @@
         </div>
       </div>
     </div>
+    <div class="search-wrap p-5 bg-white select-none">
+      <div class="item flex flex-wrap md:flex-nowrap	 items-start text-neutral-600">
+        <div class="leading-8    md:w-auto md:flex-0-auto text-base">搜索：</div>
+        <el-col :span="4">
+          <el-input clearable v-model="searchParams.name" class="flex-1" color="#FF5500" @keyup.enter="handleSearch"
+                    placeholder="根据网红名称搜索"></el-input>
+        </el-col>
+        <el-button class="ml-3" type="primary" color="#FF5500" :icon="Search" @click="handleSearch">查询
+        </el-button>
+      </div>
+    </div>
+    <!--  <div class="mt-5 md:container page-wrap mx-auto  pl-5 pr-5 md:pl-0 md:pr-0">-->
+    <!--    &lt;!&ndash; 搜索模块 start&ndash;&gt;-->
+
+    <!--  </div>-->
     <!-- 搜索模块 end-->
     <!--列表展示 start-->
     <el-row class="mt-5" :gutter="20" v-infinite-scroll="handlerPageNext" :infinite-scroll-immediate="false"
@@ -100,7 +115,7 @@
         <video v-if="dialogShow" autoplay style="width: 100%;height: 100%;object-fit: cover" :src="currentVideoUrl" controls="controls"></video>
       </div>
       <template #footer>
-        <el-button type="primary" color="#FF5500" @click="dialogShow = false">
+        <el-button type="primary" @click="dialogShow = false">
           确认
         </el-button>
       </template>
@@ -119,6 +134,7 @@ const dialogShow = ref(false)
 const {MainApi} = useApi()
 const pageSize = ref(10);
 const pageNum = ref(1)
+const name = ref("")
 const categoryList = ref<any[]>()
 const list = ref([] as any[])
 const category_id = ref("")
@@ -128,6 +144,12 @@ const queryParams = ref({
   categoryId: category_id
 })
 
+const searchParams = ref({
+  pageSize: pageSize,
+  pageNum: pageNum,
+  name: name
+})
+
 const currentCategoryIndex = ref<(number | null)>()
 const handlerCategoryChange = (item: any, index: number): void => {
   currentCategoryIndex.value = index
@@ -135,6 +157,20 @@ const handlerCategoryChange = (item: any, index: number): void => {
   queryParams.value.pageNum = 1
   list.value = []
 }
+
+const handleSearch = ()=>{
+  fetchSearchInfo()
+  list.value = []
+}
+
+const fetchSearchInfo = async () => {
+  await nextTick()
+  //网红列表
+  const userData = await MainApi.getUserList({...searchParams.value})
+  list.value = [...list.value, ...userData.data.list]
+  console.log(list.value)
+}
+
 const fetchData = async () => {
   await nextTick()
   // 如果数据不存在那么直接重新拉取数据

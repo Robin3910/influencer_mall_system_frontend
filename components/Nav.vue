@@ -20,12 +20,13 @@
         </div>
       </div>
       <!--右边-->
-      <div v-if="false" class=" flex items-center">
-        <el-button color="#FF5500" type="primary">我要下单</el-button>
-        <el-button>联系客服</el-button>
-        <el-icon class="text-2xl ml-2.5 text-gray-600">
-          <User/>
-        </el-icon>
+      <div class=" flex items-center">
+<!--        <el-button type="primary" @click="handlePromotion">我要推广</el-button>-->
+<!--        <el-button color="#FF5500" type="primary">我要下单</el-button>-->
+<!--        <el-button>联系客服</el-button>-->
+<!--        <el-icon class="text-2xl ml-2.5 text-gray-600">-->
+<!--          <User/>-->
+<!--        </el-icon>-->
       </div>
     </nav>
 
@@ -43,6 +44,9 @@ let isShowMenu = ref(false)
 let menuData = ref([])
 const handlerShowMenu = () => {
   isShowMenu.value = !isShowMenu.value;
+}
+const handlePromotion = ()=>{
+  window.open("https://snow123.com/contact_us", "_blank");
 }
 onMounted(() => {
   window.addEventListener("resize", () => {

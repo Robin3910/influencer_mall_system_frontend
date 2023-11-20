@@ -181,7 +181,7 @@ onMounted(() => {
         <div class="flex items-center">
           <span class="text-sm text-gray-400 px-3">搜索:</span>
           <el-input clearable v-model="queryParams.title" class="flex-1"
-                    placeholder="名称、链接、类目、代发描述"></el-input>
+                    placeholder="名称" @keyup.enter="handlerSearch"></el-input>
 
         </div>
       </el-col>
@@ -264,7 +264,7 @@ onMounted(() => {
                         </el-tag>
                       </a>
                     </div>
-                    <div class="text-gray-500  mb-2">
+                    <div class="text-gray-500  mb-2" style="text-align: left">
                      <span  > {{item.whResourceItemsList&&item.whResourceItemsList[0].description}}</span>
                     </div>
                   </div>
