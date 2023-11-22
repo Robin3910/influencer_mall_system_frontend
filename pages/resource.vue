@@ -235,7 +235,7 @@ onMounted(() => {
               <template #title>
                 <div class="flex items-start  w-full  flex-wrap  ">
                   <div>
-                   <img class="w-[60px] h-[60px]" :src="item.headImageUrl">
+                   <img class="w-[60px] h-[60px]" :src="item.headImageUrl.replace('http://114.132.77.118:9000','https://image.snow123.com')">
                   </div>
                   <div class="pl-3  " style="flex: 1;">
                     <div class="flex justify-between items-center flex-wrap">

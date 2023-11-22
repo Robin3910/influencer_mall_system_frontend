@@ -37,7 +37,7 @@
           <div class="bg-white rounded-md overflow-hidden text-base">
             <div class="flex flex-wrap ">
               <div class="w-full xl:w-1/2  h-[380px] md:h-[280px]">
-                <el-image lazy class="w-full h-full" fit="cover" :src="item.headImageUrl||'https://snow123.com/wp-content/uploads/2023/01/806031e1776755b7176f060101548f94_1.jpg'">
+                <el-image lazy class="w-full h-full" fit="cover" :src="item.headImageUrl.replace('http://114.132.77.118:9000','https://image.snow123.com')||'https://snow123.com/wp-content/uploads/2023/01/806031e1776755b7176f060101548f94_1.jpg'">
                   <template #error>
                     <img  src="https://snow123.com/wp-content/uploads/2023/01/806031e1776755b7176f060101548f94_1.jpg" class="w-full h-full object-cover"/>
                   </template>

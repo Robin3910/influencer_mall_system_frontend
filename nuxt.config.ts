@@ -6,17 +6,31 @@ export default defineNuxtConfig({
     nitro: {
         devProxy: {
             "/wh": {
-                target: "http://localhost:9527/wh", // 这里是接口地址
+                target: "http://114.132.77.118:9527/wh", // 这里是接口地址
                 changeOrigin: true,
                 prependPath: true,
             }
         },
         routeRules: {
             '/wh/**': {
-                proxy: 'http://127.0.0.1:9527/**'
+                proxy: 'http://114.132.77.118:9527/**'
             }
         }
     },
+    // nitro: {
+    //     devProxy: {
+    //         "/wh": {
+    //             target: "http://localhost:9527/wh", // 这里是接口地址
+    //             changeOrigin: true,
+    //             prependPath: true,
+    //         }
+    //     },
+    //     routeRules: {
+    //         '/wh/**': {
+    //             proxy: 'http://127.0.0.1:9527/**'
+    //         }
+    //     }
+    // },
     postcss: {
 
         plugins: {
