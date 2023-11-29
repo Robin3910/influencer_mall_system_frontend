@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-5 md:container page-wrap mx-auto  pl-5 pr-5 md:pl-0 md:pr-0">
+  <div v-loading="loading" class="mt-5 md:container page-wrap mx-auto  pl-5 pr-5 md:pl-0 md:pr-0">
     <!-- 搜索模块 start-->
     <div class="search-wrap p-5 bg-white select-none">
       <div class="item flex flex-wrap md:flex-nowrap	 items-start text-neutral-600">
@@ -30,8 +30,7 @@
     <!--  </div>-->
     <!-- 搜索模块 end-->
     <!--列表展示 start-->
-    <el-row class="mt-5" :gutter="20" v-infinite-scroll="handlerPageNext" :infinite-scroll-immediate="false"
-            :infinite-scroll-distance="100">
+    <el-row class="mt-5" :gutter="20" >
       <template v-if="list&&list.length>0">
         <el-col :sm="12" class="mb-5 " v-for="item in list">
           <div class="bg-white rounded-md overflow-hidden text-base">
@@ -100,10 +99,23 @@
         </el-col>
       </template>
     </el-row>
-    <!--列表展示 end-->
-    <div class="py-2 flex ">
+    <el-row class="my-3 "  >
 
-    </div>
+      <el-col  :span="24" :md="24"  class="flex justify-end items-center ">
+        <ClientOnly>
+          <el-pagination
+              background
+              :page-sizes="[10, 20, 30, 40]"
+              v-model:current-page="queryParams.pageNum"
+              v-model:page-size="queryParams.pageSize"
+              @current-change="handlerSizeChange"
+              layout="prev, pager, next"
+              :total="total"
+          />
+        </ClientOnly>
+      </el-col>
+
+    </el-row>
 
   </div>
   <client-only>
@@ -138,6 +150,8 @@ const name = ref("")
 const categoryList = ref<any[]>()
 const list = ref([] as any[])
 const category_id = ref("")
+const total = ref(0)
+const loading = ref(false)
 const queryParams = ref({
   pageSize: pageSize,
   pageNum: pageNum,
@@ -172,6 +186,7 @@ const fetchSearchInfo = async () => {
 }
 
 const fetchData = async () => {
+  loading.value = true
   await nextTick()
   // 如果数据不存在那么直接重新拉取数据
   if (!categoryList.value || categoryList.value.length == 0) {
@@ -184,7 +199,14 @@ const fetchData = async () => {
   }
   //网红列表
   const userData = await MainApi.getUserList({...queryParams.value})
-  list.value = [...list.value, ...userData.data.list]
+  total.value = userData.data.total
+  list.value = [ ...userData.data.list]
+  loading.value = false
+}
+const handlerSizeChange = (val: number) => {
+  queryParams.value.pageNum = val
+  list.value = []
+  fetchData()
 }
 watch(queryParams, () => {
   fetchData()

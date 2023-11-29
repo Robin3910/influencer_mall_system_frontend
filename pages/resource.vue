@@ -49,7 +49,16 @@ const queryParams = ref({
   priceStart: "",
   priceEnd: "",
   region: "",
-  platform: "",
+  platform: ""
+
+})
+const total = ref(0)
+const regionQueryParams = ref({
+  status: '0',
+  platformStatus:'0' ,
+  pageSize: 9999,
+  pageNum: 1,
+
 })
 const regionData = ref([])
 const tableData = ref([])
@@ -57,18 +66,19 @@ const fetchData = async () => {
   await nextTick()
   loading.value = true
   let data = await MainApi.getResourceList(queryParams)
+  total.value = data.data.total
   loading.value = false
   // if (data && data.data.list && data.data.list.length > 0) {
   //   (data.data.list as any[]).forEach(item => {
   //     item.price = "¥" + (item?.whResourceItemsList[0]?.price || 0)
   //   })
   // }
-  tableData.value = [...tableData.value, ...data.data.list] as any
+  tableData.value = data.data.list as any
 
 }
 const fetchRegoinData = async () => {
   await nextTick()
-  let data = await MainApi.getRegionList(queryParams)
+  let data = await MainApi.getRegionList(regionQueryParams)
   if (data && data.data.list && data.data.list.length > 0) {
     regionData.value = data.data.list
   }
@@ -89,7 +99,7 @@ const handlerResetSearch = () => {
   tableData.value = []
   queryParams.value = {
     productPlatform: "",
-    pageSize: 10,
+    pageSize: 5,
     pageNum: 1,
     title: "",
     priceStart: "",
@@ -153,6 +163,9 @@ const getProductPlatFormIcon = (str: string): string[] => {
   console.log('>>>>>>>>>>>iconData', iconData)
   return iconData;
 }
+const handlerSizeChange = (val: number) => {
+  fetchData()
+}
 onMounted(() => {
   fetchRegoinData()
   fetchData()
@@ -161,75 +174,78 @@ onMounted(() => {
 </script>
 
 <template>
-  <div style="position: relative" class="mt-5 md:container page-wrap mx-auto  pl-5 pr-5 md:pl-0 md:pr-0">
-    <el-row class="bg-[white] p-[10px]  ">
+  <div style="position: relative" class="mt-5 md:container page-wrap mx-auto  pl-5 pr-5 md:pl-0 md:pr-0"  v-loading="loading">
+    <el-affix :offset="80">
+      <el-row class="bg-[white] p-[10px]   ">
 
-      <el-col :span="24" :sm="24" :md="24" :lg="12" class="mb-[10px] px-[10px]  ">
-        <div class="flex items-center  h-full flex-wrap">
-          <span class="text-sm text-gray-400 px-3 flex-0-auto mb-2">购物平台:</span>
-          <div class="flex items-center flex-wrap">
-            <div v-for="(_item,_index) in platformList" @click="handlerSelectStation(_index)" :key="_index"
-                 class="flex items-center cursor-pointer px-3 mb-2">
-              <svg-icon v-if="_item.icon" :name="_item.icon" class="w-[20px] h-[20px] inline-block mr-1"></svg-icon>
-              <span class="flex-0-auto text-gray-400 text-sm"
-                    :class="[_item.selected?'!text-green-500':'']">{{ _item.name }}</span>
+        <el-col :span="24" :sm="24" :md="24" :lg="12" class="mb-[10px] px-[10px]  ">
+          <div class="flex items-center  h-full flex-wrap">
+            <span class="text-sm text-gray-400 px-3 flex-0-auto mb-2">购物平台:</span>
+            <div class="flex items-center flex-wrap">
+              <div v-for="(_item,_index) in platformList" @click="handlerSelectStation(_index)" :key="_index"
+                   class="flex items-center cursor-pointer px-3 mb-2">
+                <svg-icon v-if="_item.icon" :name="_item.icon" class="w-[20px] h-[20px] inline-block mr-1"></svg-icon>
+                <span class="flex-0-auto text-gray-400 text-sm"
+                      :class="[_item.selected?'!text-green-500':'']">{{ _item.name }}</span>
+              </div>
             </div>
           </div>
-        </div>
-      </el-col>
-      <el-col :span="24" :sm="24" :md="24" :lg="8" class="mb-[10px] px-[10px]">
-        <div class="flex items-center">
-          <span class="text-sm text-gray-400 px-3">搜索:</span>
-          <el-input clearable v-model="queryParams.title" class="flex-1"
-                    placeholder="名称" @keyup.enter="handlerSearch"></el-input>
+        </el-col>
+        <el-col :span="24" :sm="24" :md="24" :lg="8" class="mb-[10px] px-[10px]">
+          <div class="flex items-center">
+            <span class="text-sm text-gray-400 px-3">搜索:</span>
+            <el-input clearable v-model="queryParams.title" class="flex-1"
+                      placeholder="名称" @keyup.enter="handlerSearch"></el-input>
 
-        </div>
-      </el-col>
-      <el-col :span="24" :sm="4" :md="4" class="mb-[10px] px-[10px]">
-        <div class="flex items-center">
+          </div>
+        </el-col>
+        <el-col :span="24" :sm="4" :md="4" class="mb-[10px] px-[10px]">
+          <div class="flex items-center">
 
-          <el-button class="ml-3" type="primary" :icon="Search" color="#FF5500" @click="handlerSearch" plain>查询
-          </el-button>
-          <el-button class="ml-3" type="primary" :icon="Refresh" color="#FF5500" @click="handlerResetSearch" plain>重置
-          </el-button>
-        </div>
-      </el-col>
+            <el-button class="ml-3" type="primary" :icon="Search" color="#FF5500" @click="handlerSearch" plain>查询
+            </el-button>
+            <el-button class="ml-3" type="primary" :icon="Refresh" color="#FF5500" @click="handlerResetSearch" plain>重置
+            </el-button>
+          </div>
+        </el-col>
 
-    </el-row>
-
+      </el-row>
+    </el-affix>
     <el-row class="mt-[10px] ">
       <el-col :span="0" :md="4" class="pr-3 ">
-        <el-scrollbar height="calc( 100vh - 180px )">
-          <el-collapse>
-            <el-collapse-item :name="index" v-for="(item,index) in regionData" :key="index" class="!pb-0">
-              <template #title>
-                <div class="flex items-center px-3 hover:text-green-500		" @click="handlerSearchRegion(item)">
-                  <el-image class=" rounded-md w-[30px] h-[30px] mr-3" fit="cover"
-                            :src="item.icon">
-                    <template #error>
-                      <img src="https://snow123.com/wp-content/uploads/2023/01/806031e1776755b7176f060101548f94_1.jpg"
-                           class="w-full h-full object-cover"/>
-                    </template>
-                  </el-image>
-                  <span class="text-gray-950">{{ item.name }}</span>
+        <el-affix :offset="160">
+          <el-scrollbar height="calc( 100vh - 180px )">
+            <el-collapse>
+              <el-collapse-item :name="index" v-for="(item,index) in regionData" :key="index" class="!pb-0">
+                <template #title>
+                  <div class="flex items-center px-3 hover:text-green-500		" @click="handlerSearchRegion(item)">
+                    <el-image class=" rounded-md w-[30px] h-[30px] mr-3" fit="cover"
+                              :src="item.icon">
+                      <template #error>
+                        <img src="https://snow123.com/wp-content/uploads/2023/01/806031e1776755b7176f060101548f94_1.jpg"
+                             class="w-full h-full object-cover"/>
+                      </template>
+                    </el-image>
+                    <span class="text-gray-950">{{ item.name }}</span>
+                  </div>
+                </template>
+                <div v-for="(_item,_index) in item.children" :key="_index" :class="[_item.checked?'text-green-500':'']"
+                     @click="handlerSearchPlatform(item,_item)"
+                     class=" pl-6 py-2 hover:text-green-500 cursor-pointer">
+                  {{ _item.name }}
                 </div>
-              </template>
-              <div v-for="(_item,_index) in item.children" :key="_index" :class="[_item.checked?'text-green-500':'']"
-                   @click="handlerSearchPlatform(item,_item)"
-                   class=" pl-6 py-2 hover:text-green-500 cursor-pointer">
-                {{ _item.name }}
-              </div>
 
-            </el-collapse-item>
+              </el-collapse-item>
 
-          </el-collapse>
-        </el-scrollbar>
+            </el-collapse>
+          </el-scrollbar>
+        </el-affix>
 
       </el-col>
-      <el-col :span="24" :md="14"  v-infinite-scroll="handlerPageNext" :infinite-scroll-immediate="false"
-              :infinite-scroll-distance="150"  >
+
+      <el-col :span="24" :md="14"  class="" >
         <!--新版本-->
-        <div v-for="(item,index) in tableData" :key="index" class="px-5 py-2 bg-white mb-3">
+        <div   v-for="(item,index) in tableData" :key="index" class="px-5 py-2 bg-white mb-3">
           <el-collapse>
             <el-collapse-item>
               <template #title>
@@ -290,16 +306,37 @@ onMounted(() => {
 
       </el-col>
       <el-col :span="0" :md="6" class="pl-3 ">
-        <div class="bg-[white] h-[20vh]">
-          <div class="p-[10px] text-lg">代发申请</div>
-          <div class="p-[10px] text-gray-500		">资源多样，价格实惠、透明。如果您有好的资源，也可在此提交代发申请</div>
-          <div class="p-[10px]">
-            <a href="https://docs.qq.com/form/page/DVEVBUFJnQ01IT1lr#/fill" target="_blank">
-              <el-button type="primary" color="#FF5500">立即申请</el-button>
-            </a>
+        <el-affix :offset="160">
+          <div class="bg-[white] h-[20vh]">
+            <div class="p-[10px] text-lg">代发申请</div>
+            <div class="p-[10px] text-gray-500		">资源多样，价格实惠、透明。如果您有好的资源，也可在此提交代发申请</div>
+            <div class="p-[10px]">
+              <a href="https://docs.qq.com/form/page/DVEVBUFJnQ01IT1lr#/fill" target="_blank">
+                <el-button type="primary" color="#FF5500">立即申请</el-button>
+              </a>
+            </div>
           </div>
-        </div>
+        </el-affix>
+
       </el-col>
+    </el-row>
+  <!--  分页-->
+    <el-row class="mt-[10px] "  >
+      <el-col :span="0" :md="4" class="pr-3 "></el-col>
+      <el-col  :span="24" :md="14"  class="flex justify-end items-center ">
+        <ClientOnly>
+          <el-pagination
+              background
+              :page-sizes="[10, 20, 30, 40]"
+              v-model:current-page="queryParams.pageNum"
+              v-model:page-size="queryParams.pageSize"
+              @current-change="handlerSizeChange"
+              layout="prev, pager, next"
+              :total="total"
+          />
+        </ClientOnly>
+      </el-col>
+      <el-col :span="0" :md="4" class="pl-3 "></el-col>
     </el-row>
   </div>
 </template>
