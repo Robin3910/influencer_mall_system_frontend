@@ -9,7 +9,7 @@ import Nav from "~/components/Nav.vue";
       <Nav></Nav>
     </div>
 
-    <div class="mt-5 md:container page-wrap mx-auto  pl-5 pr-5 md:pl-0 md:pr-0">
+    <div class=" md:container page-wrap mx-auto  pl-5 pr-5 md:pl-0 md:pr-0">
       <slot></slot>
     </div>
   </div>

@@ -1,7 +1,5 @@
-//文件目录：service/index.ts
 
-// 引入了nuxt/app模块中的UseFetchOptions类型,UseFetchOptions类型是一个用于配置请求选项的接口或类型
-import {UseFetchOptions} from "nuxt/app";
+import type {UseFetchOptions} from "nuxt/app";
 
 //  HTTP 请求的方法
 type Methods = "GET" | "POST" | "DELETE" | "PUT";

@@ -4,6 +4,7 @@
 // })
 import {Plus, Refresh, Search} from "@element-plus/icons-vue";
 import {onMounted} from "@vue/runtime-core";
+import zhCn from "element-plus/es/locale/lang/zh-cn";
 
 const platformList = ref([
   {
@@ -55,7 +56,7 @@ const queryParams = ref({
 const total = ref(0)
 const regionQueryParams = ref({
   status: '0',
-  platformStatus:'0' ,
+  platformStatus: '0',
   pageSize: 9999,
   pageNum: 1,
 
@@ -89,9 +90,9 @@ const handlerSearch = () => {
   fetchData()
 }
 const handlerResetSearch = () => {
-  regionData.value=regionData.value.map(item=>{
-    item.children= item.children.map((_item: { checked: boolean; })=>{
-      _item.checked=false
+  regionData.value = regionData.value.map(item => {
+    item.children = item.children.map((_item: { checked: boolean; }) => {
+      _item.checked = false
       return _item
     })
     return item
@@ -166,6 +167,10 @@ const getProductPlatFormIcon = (str: string): string[] => {
 const handlerSizeChange = (val: number) => {
   fetchData()
 }
+const handlerPageSizeChange = (val: number) => {
+  queryParams.value.pageNum = 1
+  fetchData()
+}
 onMounted(() => {
   fetchRegoinData()
   fetchData()
@@ -174,10 +179,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div style="position: relative" class="mt-5 md:container page-wrap mx-auto  pl-5 pr-5 md:pl-0 md:pr-0"  v-loading="loading">
-    <el-affix :offset="80">
+  <!--搜索栏-->
+  <el-affix :offset="60">
+    <div class=" py-[20px] bg-[#f5f7f9] ">
       <el-row class="bg-[white] p-[10px]   ">
-
         <el-col :span="24" :sm="24" :md="24" :lg="12" class="mb-[10px] px-[10px]  ">
           <div class="flex items-center  h-full flex-wrap">
             <span class="text-sm text-gray-400 px-3 flex-0-auto mb-2">购物平台:</span>
@@ -210,10 +215,14 @@ onMounted(() => {
         </el-col>
 
       </el-row>
-    </el-affix>
-    <el-row class="mt-[10px] ">
+    </div>
+  </el-affix>
+  <!--内容主题-->
+  <div style="position: relative"  class=" md:container page-wrap mx-auto  pl-5 pr-5 md:pl-0 md:pr-0"
+       v-loading="loading">
+    <el-row>
       <el-col :span="0" :md="4" class="pr-3 ">
-        <el-affix :offset="160">
+        <el-affix :offset="165">
           <el-scrollbar height="calc( 100vh - 180px )">
             <el-collapse>
               <el-collapse-item :name="index" v-for="(item,index) in regionData" :key="index" class="!pb-0">
@@ -240,32 +249,33 @@ onMounted(() => {
             </el-collapse>
           </el-scrollbar>
         </el-affix>
-
       </el-col>
-
-      <el-col :span="24" :md="14"  class="" >
+      <el-col :span="24" :md="14" class="">
         <!--新版本-->
-        <div   v-for="(item,index) in tableData" :key="index" class="px-5 py-2 bg-white mb-3">
+        <div v-for="(item,index) in tableData" :key="index" class="px-5 py-2 bg-white mb-3">
           <el-collapse>
             <el-collapse-item>
               <template #title>
                 <div class="flex items-start  w-full  flex-wrap  ">
                   <div>
-                   <img class="w-[60px] h-[60px]" :src="item.headImageUrl.replace('http://114.132.77.118:9000','https://image.snow123.com')">
+                    <img class="w-[60px] h-[60px]"
+                         :src="item.headImageUrl.replace('http://114.132.77.118:9000','https://image.snow123.com')">
                   </div>
                   <div class="pl-3  " style="flex: 1;">
                     <div class="flex justify-between items-center flex-wrap">
                       <div>
-                        <span class="font-bold text-base">{{item.title}}</span>
+                        <span class="font-bold text-base">{{ item.title }}</span>
                       </div>
 
                       <div class=" flex items-center text-gray-400 flex-1  justify-end">
                         <template v-if="item.members>0">
-                          <el-icon class="mr-1"><User /></el-icon>
-                          <span>{{item.members>1000?item.members/1000+'k':item.members}}</span>
+                          <el-icon class="mr-1">
+                            <User/>
+                          </el-icon>
+                          <span>{{ item.members > 1000 ? item.members / 1000 + 'k' : item.members }}</span>
                         </template>
-                        <span class="ml-5 text-sm text-[#f50]">¥{{item.lowPrice||0}}起</span>
-                       </div>
+                        <span class="ml-5 text-sm text-[#f50]">¥{{ item.lowPrice || 0 }}起</span>
+                      </div>
                     </div>
 
                     <div class="mb-2 flex items-center">
@@ -281,7 +291,7 @@ onMounted(() => {
                       </a>
                     </div>
                     <div class="text-gray-500  mb-2" style="text-align: left">
-                     <span  > {{item.whResourceItemsList&&item.whResourceItemsList[0].description}}</span>
+                      <span> {{ item.whResourceItemsList && item.whResourceItemsList[0].description }}</span>
                     </div>
                   </div>
                 </div>
@@ -289,15 +299,16 @@ onMounted(() => {
               <template #default>
                 <div class="py-3 bg-gray-50 pl-5" v-for="(item,index) in item.whResourceItemsList" :key="index">
                   <div class="flex items-center justify-between">
-                    <el-tag type="info" effect="plain"  class="mr-[10px] mt-[10px] !text-neutral-600 !border-neutral-600">
-                      上贴率{{item.rate}}%
+                    <el-tag type="info" effect="plain"
+                            class="mr-[10px] mt-[10px] !text-neutral-600 !border-neutral-600">
+                      上贴率{{ item.rate }}%
                     </el-tag>
                     <div class="flex items-center pr-10">
-                      <span class="ml-5 text-sm text-[#f50] mr-10">¥{{item.price||0}}</span>
+                      <span class="ml-5 text-sm text-[#f50] mr-10">¥{{ item.price || 0 }}</span>
                       <el-button type="primary" size="small" color="#FF5500">添加购物车</el-button>
                     </div>
                   </div>
-                  <div class="py-3">{{item.description}}</div>
+                  <div class="py-3">{{ item.description }}</div>
                 </div>
               </template>
             </el-collapse-item>
@@ -306,7 +317,7 @@ onMounted(() => {
 
       </el-col>
       <el-col :span="0" :md="6" class="pl-3 ">
-        <el-affix :offset="160">
+        <el-affix :offset="165">
           <div class="bg-[white] h-[20vh]">
             <div class="p-[10px] text-lg">代发申请</div>
             <div class="p-[10px] text-gray-500		">资源多样，价格实惠、透明。如果您有好的资源，也可在此提交代发申请</div>
@@ -320,20 +331,23 @@ onMounted(() => {
 
       </el-col>
     </el-row>
-  <!--  分页-->
-    <el-row class="mt-[10px] "  >
+    <!--  分页-->
+    <el-row class=" mb-3">
       <el-col :span="0" :md="4" class="pr-3 "></el-col>
-      <el-col  :span="24" :md="14"  class="flex justify-end items-center ">
+      <el-col :span="24" :md="14" class="flex justify-end items-center ">
         <ClientOnly>
+          <el-config-provider :locale="zhCn">
           <el-pagination
               background
-              :page-sizes="[10, 20, 30, 40]"
+              :page-sizes="[10, 20, 30, 40,50,100]"
               v-model:current-page="queryParams.pageNum"
               v-model:page-size="queryParams.pageSize"
               @current-change="handlerSizeChange"
-              layout="prev, pager, next"
+              @size-change="handlerPageSizeChange"
+              layout="total,  prev, pager, next, jumper,sizes"
               :total="total"
           />
+          </el-config-provider>
         </ClientOnly>
       </el-col>
       <el-col :span="0" :md="4" class="pl-3 "></el-col>
@@ -342,17 +356,20 @@ onMounted(() => {
 </template>
 
 <style>
-.el-collapse{
+.el-collapse {
   border: none;
 }
-.el-collapse-item__wrap{
+
+.el-collapse-item__wrap {
   border: none;
 }
-.el-collapse-item__header{
+
+.el-collapse-item__header {
   border: none;
-  height: auto!important;
+  height: auto !important;
   line-height: 1.2;
 }
+
 .el-input {
   --el-input-focus-border-color: var(--color-primary) !important;
 }
